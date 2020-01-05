@@ -7,6 +7,7 @@ import {
   Dimensions,
   TouchableOpacity,
 } from 'react-native';
+import { string } from 'yup';
 import useForm from '../../../../src/form';
 
 const { width: WIDTH } = Dimensions.get('window');
@@ -56,7 +57,7 @@ const styles = StyleSheet.create({
 });
 
 const LoginForm: () => React$Node = () => {
-  const { inputFields } = useForm(
+  const { data, inputFields, error } = useForm(
     {
       email: '',
       password: '',
@@ -66,11 +67,23 @@ const LoginForm: () => React$Node = () => {
         email: 'password',
         password: 'submit',
       },
+      validation: {
+        email: string()
+          .required()
+          .email(),
+        password: string()
+          .required()
+          .min(4),
+      },
       onSubmit: () => {
         alert('Logged In');
       },
     },
   );
+
+  const login = () => {
+    console.log('login', data);
+  };
 
   return (
     <View style={styles.container}>
@@ -80,9 +93,10 @@ const LoginForm: () => React$Node = () => {
         <TextInput style={styles.input} {...inputFields('email')} />
         <Text style={styles.label}>Password</Text>
         <TextInput style={styles.input} {...inputFields('password')} />
-        <TouchableOpacity style={styles.loginButton}>
+        <TouchableOpacity style={styles.loginButton} onPress={login}>
           <Text style={styles.loginButtonText}>Login</Text>
         </TouchableOpacity>
+        <Text>{JSON.stringify(error, null, 2)}</Text>
       </View>
     </View>
   );
